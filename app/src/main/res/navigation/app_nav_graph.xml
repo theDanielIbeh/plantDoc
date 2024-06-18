@@ -1,0 +1,79 @@
+<?xml version="1.0" encoding="utf-8"?>
+<navigation xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/app_nav_graph"
+    app:startDestination="@+id/uploadFragment">
+
+    <fragment
+        android:id="@+id/uploadFragment"
+        android:name="com.example.plantdoc.fragments.upload.UploadFragment"
+        android:label="fragment_upload"
+        tools:layout="@layout/fragment_upload" >
+        <action
+            android:id="@+id/action_uploadFragment_to_resultFragment"
+            app:destination="@id/resultFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/resultFragment"
+        android:name="com.example.plantdoc.fragments.result.ResultFragment"
+        android:label="fragment_result"
+        tools:layout="@layout/fragment_result" >
+        <argument
+            android:name="uri"
+            app:argType="string" />
+    </fragment>
+    <fragment
+        android:id="@+id/plantDetailsFragment"
+        android:name="com.example.plantdoc.fragments.plantDetails.PlantDetailsFragment"
+        android:label="fragment_plant_details"
+        tools:layout="@layout/fragment_plant_details" >
+        <argument android:name="plant"
+            app:argType="com.example.plantdoc.data.entities.plant.Plant" />
+    </fragment>
+    <fragment
+        android:id="@+id/plantsFragment"
+        android:name="com.example.plantdoc.fragments.plants.PlantsFragment"
+        android:label="fragment_plants"
+        tools:layout="@layout/fragment_plants" />
+    <fragment
+        android:id="@+id/diseasesFragment"
+        android:name="com.example.plantdoc.fragments.diseases.DiseasesFragment"
+        android:label="fragment_diseases"
+        tools:layout="@layout/fragment_diseases" >
+        <argument
+            android:name="plant"
+            app:argType="com.example.plantdoc.data.entities.plant.Plant" />
+        <action
+            android:id="@+id/action_diseasesFragment_to_diseaseDetailsFragment"
+            app:destination="@id/diseaseDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/diseaseDetailsFragment"
+        android:name="com.example.plantdoc.fragments.diseaseDetails.DiseaseDetailsFragment"
+        android:label="fragment_disease_details"
+        tools:layout="@layout/fragment_disease_details" >
+        <argument
+            android:name="disease"
+            app:argType="com.example.plantdoc.data.entities.disease.Disease" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyFragment"
+        android:name="com.example.plantdoc.fragments.history.HistoryFragment"
+        android:label="fragment_history"
+        tools:layout="@layout/fragment_history" >
+        <action
+            android:id="@+id/action_historyFragment_to_historyDetailsFragment"
+            app:destination="@id/historyDetailsFragment" />
+    </fragment>
+    <fragment
+        android:id="@+id/historyDetailsFragment"
+        android:name="com.example.plantdoc.fragments.historyDetails.HistoryDetailsFragment"
+        android:label="fragment_history_details"
+        tools:layout="@layout/fragment_history_details" >
+        <argument
+            android:name="history"
+            app:argType="com.example.plantdoc.data.entities.history.History" />
+    </fragment>
+</navigation>
