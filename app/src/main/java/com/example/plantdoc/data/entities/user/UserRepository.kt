@@ -1,6 +1,8 @@
 package com.example.plantdoc.data.entities.user
 
+import android.util.Log
 import androidx.lifecycle.LiveData
+import com.example.plantdoc.data.network.PlantDocApiService
 import javax.inject.Inject
 
 interface UserRepository {
@@ -12,10 +14,21 @@ interface UserRepository {
 }
 
 class UserRepositoryImpl @Inject constructor(
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val apiService: PlantDocApiService
 ) : UserRepository {
     override suspend fun insert(user: User) {
-        userDao.insert(user = user)
+//        userDao.insert(user = user)
+        try {
+            val response = apiService.insertUser(user = user)
+            Log.d("Insert User", "Success")
+            Log.d("Insert User", response.body().toString())
+            // Handle the user data
+        } catch (e: Exception) {
+            // Handle the error
+            Log.d("Insert User", "Failure")
+            e.printStackTrace()
+        }
     }
 
     override suspend fun insertUsers(users: List<User>) {

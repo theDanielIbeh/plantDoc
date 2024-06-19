@@ -18,6 +18,8 @@ import com.example.plantdoc.data.entities.user.UserRepositoryImpl
 import com.example.plantdoc.data.entities.user.UserDao
 import com.example.plantdoc.data.entities.user.UserRepository
 import com.example.plantdoc.data.network.PlantDocApiService
+import com.google.gson.Gson
+import com.google.gson.GsonBuilder
 import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFactory
 import dagger.Binds
 import dagger.Module
@@ -28,6 +30,7 @@ import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
 import retrofit2.Retrofit
+import retrofit2.converter.gson.GsonConverterFactory
 import javax.inject.Singleton
 
 
@@ -61,8 +64,8 @@ abstract class AppRepositoryModule {
 @InstallIn(SingletonComponent::class)
 object AppModule {
 
-    private const val BASE_URL =
-        "https://android-kotlin-fun-mars-server.appspot.com"
+    private const val BASE_URL = "http://10.0.2.2:5000/"
+//    private val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
 
     /**
      * Use the Retrofit builder to build a retrofit object using a kotlinx.serialization converter
@@ -70,7 +73,7 @@ object AppModule {
     @Provides
     @Singleton
     fun provideRetrofit(): Retrofit = Retrofit.Builder()
-        .addConverterFactory(Json.asConverterFactory("application/json".toMediaType()))
+        .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
         .build()
 

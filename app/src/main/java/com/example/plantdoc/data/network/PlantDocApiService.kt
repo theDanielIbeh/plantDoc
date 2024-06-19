@@ -21,6 +21,8 @@ import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.data.entities.plant.Plant
 import com.example.plantdoc.data.entities.user.User
+import com.example.plantdoc.data.network.responses.UsersResponse
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.GET
 import retrofit2.http.POST
@@ -32,8 +34,8 @@ import retrofit2.http.Query
 interface PlantDocApiService {
 
 //    Users
-    @POST("users")
-    suspend fun insertUser(@Body user: User)
+    @POST("users/create")
+    suspend fun insertUser(@Body user: User): Response<UsersResponse>
 
     @GET("users")
     suspend fun getUsers(): List<User>

@@ -1,6 +1,9 @@
 package com.example.plantdoc.fragments.register
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
+import androidx.lifecycle.lifecycleScope
+import androidx.lifecycle.viewModelScope
 import com.example.plantdoc.data.entities.user.User
 import com.example.plantdoc.data.entities.user.UserRepository
 import com.example.plantdoc.data.network.PlantDocApiService
@@ -8,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 data class RegisterModel(
@@ -31,28 +35,21 @@ class RegisterViewModel @Inject constructor(
     }
 
     suspend fun insertUser() {
-        val (
-            firstName,
-            lastName,
-            email,
-            password
-        ) = registerModel.value
-        val user = User(
-            firstName = firstName,
-            lastName = lastName,
-            email = email,
-            password = password
-        )
-        userRepository.insert(
-            user = user
-        )
-        try {
-            apiService.insertUser(user = user)
-            // Handle the user data
-        } catch (e: Exception) {
-            // Handle the error
-            e.printStackTrace()
-        }
+            val (
+                firstName,
+                lastName,
+                email,
+                password
+            ) = registerModel.value
+            val user = User(
+                firstName = firstName,
+                lastName = lastName,
+                email = email,
+                password = password
+            )
+            userRepository.insert(
+                user = user
+            )
     }
 
     fun resetRegisterModel() {

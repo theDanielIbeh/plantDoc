@@ -11,16 +11,16 @@ import com.example.plantdoc.data.entities.user.UserRepositoryImpl
 import com.example.plantdoc.data.entities.user.UserRepository
 
 interface AppContainer {
-    val userRepository: UserRepository
+//    val userRepository: UserRepository
     val plantRepository: PlantRepository
     val diseaseRepository: DiseaseRepository
     val historyRepository: HistoryRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
-    override val userRepository: UserRepository by lazy {
-        UserRepositoryImpl(PlantDocDatabase.getInstance(context = context).userDao())
-    }
+//    override val userRepository: UserRepository by lazy {
+//        UserRepositoryImpl(PlantDocDatabase.getInstance(context = context).userDao())
+//    }
 
     override val plantRepository: PlantRepository by lazy {
         PlantRepositoryImpl(PlantDocDatabase.getInstance(context = context).plantDao())
