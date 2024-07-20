@@ -4,47 +4,143 @@
     xmlns:tools="http://schemas.android.com/tools"
     tools:context=".fragments.result.ResultFragment">
 
+    <data>
+        <variable
+            name="isHealthy"
+            type="Boolean" />
+
+        <import type="android.view.View" />
+    </data>
+
     <androidx.constraintlayout.widget.ConstraintLayout
         android:layout_width="match_parent"
-        android:layout_height="match_parent">
+        android:layout_height="match_parent"
+        android:layout_marginStart="16dp"
+        android:layout_marginEnd="16dp">
 
-        <ImageView
-            android:id="@+id/imageView"
-            android:layout_width="370sp"
-            android:layout_height="370sp"
-            android:layout_centerHorizontal="true"
+        <androidx.core.widget.NestedScrollView
+            android:id="@+id/content_scroll_view"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:fillViewport="true"
+            app:layout_constraintBottom_toBottomOf="parent"
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toTopOf="parent" />
+            app:layout_constraintTop_toTopOf="parent">
 
-        <TextView
-            android:id="@+id/classified"
-            android:layout_width="wrap_content"
+            <androidx.constraintlayout.widget.ConstraintLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp">
+
+                <ImageView
+                    android:id="@+id/imageView"
+                    android:layout_width="370sp"
+                    android:layout_height="370sp"
+                    android:layout_centerHorizontal="true"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toTopOf="parent" />
+
+                <TextView
+                    android:id="@+id/classified"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/imageView"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="68dp"
+                    android:text="Classification Result:"
+                    android:textSize="24sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/imageView" />
+
+                <TextView
+                    android:id="@+id/healthy_text"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/classified"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:visibility="@{!isHealthy ? View.GONE : View.VISIBLE}"
+                    android:text="Plant is Healthy"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/classified" />
+
+                <TextView
+                    android:id="@+id/plant_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/classified"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:visibility="@{isHealthy ? View.GONE : View.VISIBLE}"
+                    android:text="Plant:"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/classified" />
+
+                <TextView
+                    android:id="@+id/plant"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/classified"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:textSize="20sp"
+                    android:visibility="@{isHealthy ? View.GONE : View.VISIBLE}"
+                    app:layout_constraintBottom_toBottomOf="@+id/plant_title"
+                    app:layout_constraintStart_toEndOf="@+id/plant_title"
+                    tools:text="Tomato" />
+
+                <TextView
+                    android:id="@+id/disease_title"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/classified"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginTop="16dp"
+                    android:visibility="@{isHealthy ? View.GONE : View.VISIBLE}"
+                    android:text="Disease:"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@+id/plant_title" />
+
+                <TextView
+                    android:id="@+id/disease"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@+id/classified"
+                    android:layout_centerHorizontal="true"
+                    android:layout_marginStart="8dp"
+                    android:visibility="@{isHealthy ? View.GONE : View.VISIBLE}"
+                    android:textSize="20sp"
+                    app:layout_constraintBottom_toBottomOf="@+id/disease_title"
+                    app:layout_constraintStart_toEndOf="@+id/disease_title"
+                    tools:text="Tomato" />
+            </androidx.constraintlayout.widget.ConstraintLayout>
+
+        </androidx.core.widget.NestedScrollView>
+
+        <Button
+            android:id="@+id/view_info"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/imageView"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="68dp"
-            android:text="Classified as:"
-            android:textSize="20sp"
+            android:layout_alignParentBottom="true"
+            android:layout_centerVertical="true"
+            android:layout_marginBottom="8dp"
+            android:text="View Disease Details"
+            android:visibility="@{isHealthy ? View.GONE : View.VISIBLE}"
+            android:textSize="21sp"
             android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/imageView" />
-
-        <TextView
-            android:id="@+id/result"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/classified"
-            android:layout_centerHorizontal="true"
-            android:layout_marginTop="84dp"
-            android:text=""
-            android:textColor="#C30000"
-            android:textSize="27sp"
-            android:textStyle="bold"
-            app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintStart_toStartOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/classified" />
+            android:backgroundTint="@color/lightGreen"
+            app:layout_constraintBottom_toTopOf="@+id/predict"
+            tools:layout_editor_absoluteX="16dp" />
 
         <Button
             android:id="@+id/predict"
@@ -52,12 +148,11 @@
             android:layout_height="wrap_content"
             android:layout_alignParentBottom="true"
             android:layout_centerVertical="true"
+            android:layout_marginBottom="8dp"
             android:text="Predict"
-            android:textAllCaps="false"
             android:textSize="21sp"
             android:textStyle="bold"
             app:layout_constraintBottom_toBottomOf="parent"
-            app:layout_constraintTop_toBottomOf="@+id/result"
             tools:layout_editor_absoluteX="16dp" />
 
     </androidx.constraintlayout.widget.ConstraintLayout>

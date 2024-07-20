@@ -14,7 +14,7 @@ interface AppContainer {
 //    val userRepository: UserRepository
     val plantRepository: PlantRepository
     val diseaseRepository: DiseaseRepository
-    val historyRepository: HistoryRepository
+//    val historyRepository: HistoryRepository
 }
 
 class DefaultAppContainer(private val context: Context): AppContainer {
@@ -30,7 +30,7 @@ class DefaultAppContainer(private val context: Context): AppContainer {
         DiseaseRepositoryImpl(PlantDocDatabase.getInstance(context = context).diseaseDao())
     }
 
-    override val historyRepository: HistoryRepository by lazy {
-        HistoryRepositoryImpl(PlantDocDatabase.getInstance(context = context).historyDao())
-    }
+//    override val historyRepository: HistoryRepository by lazy {
+//        HistoryRepositoryImpl(PlantDocDatabase.getInstance(context = context).historyDao())
+//    }
 }

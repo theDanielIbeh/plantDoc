@@ -68,6 +68,8 @@ dependencies {
     implementation(libs.androidx.room.ktx)
     implementation("androidx.room:room-runtime:2.6.1")
     implementation(libs.tensorflow.lite.gpu)
+    implementation(libs.androidx.hilt.common)
+    implementation(libs.androidx.hilt.work)
     ksp("androidx.room:room-compiler:2.6.1")
 
     testImplementation(libs.junit)
@@ -116,4 +118,9 @@ dependencies {
     //Glide(Images)
     implementation("com.github.bumptech.glide:glide:4.14.2")
     annotationProcessor("com.github.bumptech.glide:compiler:4.14.2")
+
+    implementation("com.squareup.okhttp3:logging-interceptor:4.9.1")
+
+    // WorkManager dependency
+    implementation("androidx.work:work-runtime-ktx:2.8.1")
 }

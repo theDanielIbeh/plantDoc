@@ -13,7 +13,7 @@ interface HistoryDao {
     suspend fun insert(history: History)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
-    suspend fun insertHistory(history: List<History>)
+    suspend fun insert(history: List<History>)
 
     @Query(
         "UPDATE history SET remote_url = :remote WHERE local_url= :local"
@@ -34,9 +34,4 @@ interface HistoryDao {
         "SELECT * FROM history WHERE STRFTIME('%Y-%m-%d', date) =:date "
     )
     fun getAllHistoryByDatePagingData(date: String): PagingSource<Int, History>
-
-    @Query(
-        "SELECT * FROM history where id = :historyId"
-    )
-    suspend fun getHistoryById(historyId: Int): History?
 }

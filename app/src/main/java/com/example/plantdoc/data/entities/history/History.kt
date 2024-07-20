@@ -6,30 +6,34 @@ import androidx.room.ColumnInfo
 import androidx.room.Entity
 import androidx.room.PrimaryKey
 import com.example.plantdoc.data.entities.plant.Plant
+import com.google.gson.annotations.SerializedName
+import javax.annotation.Nonnull
 
-@Entity(tableName = "history")
+@Entity(tableName = "history", primaryKeys = ["user_id", "date"])
 data class History(
-    @PrimaryKey(autoGenerate = true)
-    @ColumnInfo(name = "id")
-    val id: Int = 0,
-
     @ColumnInfo(name = "user_id")
+    @Nonnull
+    @SerializedName("user_id")
     var userId: Int,
 
     @ColumnInfo(name = "predicted_class_id")
+    @SerializedName("predicted_class_id")
     var predictedClassId: Int,
 
     @ColumnInfo(name = "local_url")
+    @SerializedName("local_url")
     var localUrl: String,
 
     @ColumnInfo(name = "remote_url")
+    @SerializedName("remote_url")
     var remoteUrl: String,
 
     @ColumnInfo(name = "date")
+    @SerializedName("date")
+    @Nonnull
     var date: String,
 ) : Parcelable {
     constructor(parcel: Parcel) : this(
-        parcel.readInt(),
         parcel.readInt(),
         parcel.readInt(),
         parcel.readString().toString(),
@@ -38,7 +42,6 @@ data class History(
     )
 
     override fun writeToParcel(parcel: Parcel, flags: Int) {
-        parcel.writeInt(id)
         parcel.writeInt(userId)
         parcel.writeInt(predictedClassId)
         parcel.writeString(localUrl)

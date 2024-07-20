@@ -9,8 +9,11 @@ import androidx.room.Query
 
 @Dao
 interface PlantDao {
-    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(plant: Plant)
+
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(plants: List<Plant>)
 
     @Query(
         "SELECT * FROM plant"
@@ -18,7 +21,7 @@ interface PlantDao {
     fun getAllPlants(): LiveData<List<Plant>>
 
     @Query(
-        "SELECT * FROM plant WHERE LOWER(name) LIKE :searchText"
+        "SELECT * FROM plant WHERE LOWER(name) LIKE LOWER(:searchText)"
     )
     fun getAllPlantsPagingData(searchText: String?): PagingSource<Int, Plant>
 

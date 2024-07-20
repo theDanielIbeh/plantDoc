@@ -1,9 +1,9 @@
 package com.example.plantdoc.fragments.upload
 
 import android.Manifest
+import android.app.AlertDialog
+import android.content.DialogInterface
 import android.content.Intent
-import android.graphics.Bitmap
-import android.media.ThumbnailUtils
 import android.os.Build
 import android.os.Bundle
 import android.provider.MediaStore
@@ -18,7 +18,6 @@ import androidx.fragment.app.Fragment
 import androidx.navigation.fragment.findNavController
 import com.example.plantdoc.databinding.FragmentUploadBinding
 import dagger.hilt.android.AndroidEntryPoint
-import kotlin.math.min
 
 /**
  * A simple [Fragment] subclass.
@@ -37,40 +36,70 @@ class UploadFragment : Fragment() {
         // Inflate the layout for this fragment
         binding = FragmentUploadBinding.inflate(inflater, container, false)
 
+        if (checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) != PermissionChecker.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES), 100)
+        } else if (checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+            != PermissionChecker.PERMISSION_GRANTED
+        ) {
+            // Permission is not granted, request the permission
+            requestPermissions(arrayOf(Manifest.permission.CAMERA, Manifest.permission.READ_MEDIA_IMAGES), 100)
+        }
+
         binding.apply {
-            camera.setOnClickListener {
-                if (checkSelfPermission(
-                        requireContext(),
-                        Manifest.permission.CAMERA
-                    ) == PermissionChecker.PERMISSION_GRANTED
-                ) {
-                    val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
-                    startActivityForResult(cameraIntent, 3)
-                } else {
-                    requestPermissions(arrayOf(Manifest.permission.CAMERA), 100)
-                }
-            }
             gallery.setOnClickListener {
-                if (checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
-                    != PermissionChecker.PERMISSION_GRANTED
-                ) {
-                    // Permission is not granted, request the permission
-                    requestPermissions(
-                        arrayOf(Manifest.permission.READ_MEDIA_IMAGES),
-                        100
-                    )
-                } else {
-                    val cameraIntent =
-                        Intent(
-                            Intent.ACTION_GET_CONTENT,
-                            MediaStore.Images.Media.EXTERNAL_CONTENT_URI
-                        )
-//                    cameraIntent.type = "image/*"
-                    startActivityForResult(cameraIntent, 1)
-                }
+                takePhotoOrSelectFile()
             }
         }
         return binding.root
+    }
+
+    private fun takePhotoOrSelectFile() {
+        if (checkSelfPermission(
+                requireContext(),
+                Manifest.permission.CAMERA
+            ) != PermissionChecker.PERMISSION_GRANTED
+        ) {
+            requestPermissions(arrayOf(Manifest.permission.CAMERA), 100)
+        } else if (checkSelfPermission(requireContext(), Manifest.permission.READ_MEDIA_IMAGES)
+            != PermissionChecker.PERMISSION_GRANTED
+        ) {
+            // Permission is not granted, request the permission
+            requestPermissions(arrayOf(Manifest.permission.READ_MEDIA_IMAGES), 100)
+        } else {
+            val choice =
+                arrayOf<CharSequence>("Take Photo", "Choose from Gallery", "Cancel")
+            val myAlertDialog: AlertDialog.Builder = AlertDialog.Builder(requireContext())
+            myAlertDialog.setTitle("Select Image/File")
+            myAlertDialog.setItems(
+                choice
+            ) { dialog, item ->
+                when {
+                    // Select "Take Photo" to take a photo
+                    choice[item] == "Take Photo" -> {
+                        val cameraIntent = Intent(MediaStore.ACTION_IMAGE_CAPTURE)
+                        startActivityForResult(cameraIntent, 3)
+                    }
+                    // Select "Choose from Gallery" to pick image from gallery
+                    choice[item] == "Choose from Gallery" -> {
+                        val galleryIntent =
+                            Intent(
+                                Intent.ACTION_GET_CONTENT,
+                                MediaStore.Images.Media.EXTERNAL_CONTENT_URI
+                            )
+                        startActivityForResult(galleryIntent, 1)
+                    }
+                    // Select "Cancel" to cancel the task
+                    choice[item] == "Cancel" -> {
+                        dialog.dismiss()
+                    }
+                }
+            }
+            myAlertDialog.show()
+        }
     }
 
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {

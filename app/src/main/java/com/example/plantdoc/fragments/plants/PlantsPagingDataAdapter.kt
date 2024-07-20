@@ -55,7 +55,13 @@ class PlantsPagingDataAdapter(
                     return
                 }
 
+                binding.plant = plant
 
+                binding.apply {
+                    viewDetailsButton.setOnClickListener {
+                        listener.viewPlantDetails(plant)
+                    }
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()

@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 interface PlantRepository {
     suspend fun insert(plant: Plant)
+    suspend fun insert(plants: List<Plant>)
     fun getAllPlants(): LiveData<List<Plant>>
     fun getAllPlantsPagingData(
         pageSize: Int,
@@ -23,6 +24,10 @@ class PlantRepositoryImpl @Inject constructor(
 ) : PlantRepository {
     override suspend fun insert(plant: Plant) {
         plantDao.insert(plant = plant)
+    }
+
+    override suspend fun insert(plants: List<Plant>) {
+        plantDao.insert(plants = plants)
     }
 
     override fun getAllPlants(): LiveData<List<Plant>> =

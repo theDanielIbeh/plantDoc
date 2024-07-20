@@ -40,6 +40,7 @@ class MainActivity : AppCompatActivity() {
         isLoggedIn.observe(this@MainActivity) {
             if (it == true) {
                 val intent = Intent(this@MainActivity, AppActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
                 startActivity(intent)
 
             } else {
@@ -51,6 +52,9 @@ class MainActivity : AppCompatActivity() {
 
         if (!checkPermission())
             requestPermission()
+
+//        viewModel.insertData()
+        viewModel.downloadData()
     }
 
     /**

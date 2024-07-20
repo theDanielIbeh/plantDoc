@@ -6,18 +6,25 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.SimpleItemAnimator
+import com.example.plantdoc.data.entities.disease.Disease
+import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.databinding.FragmentHistoryBinding
+import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 import java.util.Calendar
+import kotlin.system.exitProcess
 
-class HistoryFragment : Fragment() {
+@AndroidEntryPoint
+class HistoryFragment : Fragment(), HistoryPagingDataAdapter.HistoryListener {
     private lateinit var binding: FragmentHistoryBinding
     private val viewModel: HistoryViewModel by viewModels()
 
@@ -34,6 +41,17 @@ class HistoryFragment : Fragment() {
             false
         )
         initCompulsoryVariables()
+
+
+
+//        viewModel.isLoggedIn.observe(viewLifecycleOwner) {
+//            if (it == true) {
+//                setOnBackPressedCallback()
+//            } else  {
+//                findNavController().clearBackStack(this.id)
+//            }
+//        }
+
         return binding.root
     }
 
@@ -57,6 +75,7 @@ class HistoryFragment : Fragment() {
     private fun initializeRecycler() {
         adapter = HistoryPagingDataAdapter(
             requireContext(),
+            this
         )
         viewModel.getTransactionsLive().observe(viewLifecycleOwner) {
             adapter?.submitData(lifecycle, it)
@@ -87,7 +106,7 @@ class HistoryFragment : Fragment() {
 
         binding.ivDateCancel.setOnClickListener {
             binding.acvDate.setText("")
-            binding.shouldCancel2Show = false
+            binding.shouldCancelShow = false
         }
     }
 
@@ -122,5 +141,23 @@ class HistoryFragment : Fragment() {
         picker.setOnDismissListener {
             filterTransactionByDate(binding.acvDate.text.toString())
         }
+    }
+
+    private fun setOnBackPressedCallback() {
+        val callback: OnBackPressedCallback =
+            object : OnBackPressedCallback(true /* enabled by default */) {
+                override fun handleOnBackPressed() {
+                    requireActivity().finishAffinity()
+                    exitProcess(0)
+                }
+            }
+        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
+    }
+
+    override suspend fun getDisease(diseaseId: Int): Disease? =
+        viewModel.getDisease(diseaseId)
+
+    override fun viewHistoryDetails(history: History) {
+        findNavController().navigate(HistoryFragmentDirections.actionHistoryFragmentToHistoryDetailsFragment(history))
     }
 }

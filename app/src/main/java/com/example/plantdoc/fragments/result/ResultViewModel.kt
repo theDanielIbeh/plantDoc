@@ -7,6 +7,8 @@ import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.data.entities.disease.DiseaseRepository
 import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.data.entities.history.HistoryRepository
+import com.example.plantdoc.data.entities.plant.Plant
+import com.example.plantdoc.data.entities.plant.PlantRepository
 import com.example.plantdoc.data.entities.user.User
 import com.example.plantdoc.data.entities.user.UserRepository
 import com.example.plantdoc.data.network.PlantDocApiService
@@ -31,15 +33,19 @@ data class ResultModel(
 
 @HiltViewModel
 class ResultViewModel @Inject constructor(
-    private val userRepository: UserRepository,
     private val historyRepository: HistoryRepository,
     private val diseaseRepository: DiseaseRepository,
-    private val apiService: PlantDocApiService,
+    private val plantRepository: PlantRepository,
     val preferencesRepository: PlantDocPreferencesRepository,
 ) : ViewModel() {
     var disease: Disease? = null
+    var plant: Plant? = null
     private var _resultModel: MutableStateFlow<ResultModel> = MutableStateFlow(ResultModel())
     val resultModel: StateFlow<ResultModel> = _resultModel.asStateFlow()
+    val isLoggedIn = preferencesRepository.getPreference(
+        Boolean::class.java,
+        Constants.IS_LOGGED_IN
+    )
     val loggedInUser = preferencesRepository.getPreference(
         User::class.java,
         Constants.USER
@@ -62,11 +68,10 @@ class ResultViewModel @Inject constructor(
             date = formatter.format(currentDate),
         )
         viewModelScope.launch {
-            historyRepository.insert(
-                history = history
-            )
             try {
-//                apiService.insertHistory(history = history)
+                historyRepository.insert(
+                    history = history
+                )
                 // Handle the user data
             } catch (e: Exception) {
                 // Handle the error
@@ -92,4 +97,7 @@ class ResultViewModel @Inject constructor(
 
     suspend fun getDiseaseByIndex(idx: Int): Disease? =
         diseaseRepository.getDiseaseByClassIndex(idx)
+
+    suspend fun getPlantById(id: Int): Plant? =
+        plantRepository.getPlantById(id)
 }

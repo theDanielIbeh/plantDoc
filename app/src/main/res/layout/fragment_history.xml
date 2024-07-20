@@ -9,7 +9,7 @@
         <import type="android.view.View" />
 
         <variable
-            name="shouldCancel2Show"
+            name="shouldCancelShow"
             type="Boolean" />
     </data>
 
@@ -25,7 +25,6 @@
             android:layout_height="wrap_content"
             android:text="Select to view details. Filter results by date."
             app:layout_constraintEnd_toEndOf="parent"
-            app:layout_constraintHorizontal_bias="0.061"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent" />
 
@@ -61,7 +60,7 @@
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toTopOf="parent"
-                    tools:hint="Select Date" />
+                    android:hint="Select Date"/>
 
                 <ImageView
                     android:id="@+id/iv_date_drop_down"
@@ -69,7 +68,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/baseline_arrow_drop_down_24"
-                    android:visibility="@{shouldCancel2Show? View.GONE:View.VISIBLE}"
+                    android:visibility="@{shouldCancelShow? View.GONE:View.VISIBLE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"
@@ -83,7 +82,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginStart="5dp"
                     android:src="@drawable/cancel"
-                    android:visibility="@{shouldCancel2Show? View.VISIBLE:View.GONE}"
+                    android:visibility="@{shouldCancelShow? View.VISIBLE:View.GONE}"
                     app:layout_constraintBottom_toBottomOf="parent"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintHorizontal_bias="1.0"

@@ -15,6 +15,7 @@
     <string name="existing_user_message">Already Registered?</string>
     <string name="register"><u>Register</u></string>
     <string name="log_out">Log out</string>
+    <string name="exit">Exit</string>
     <string name="home">Home</string>
     <string name="history">History</string>
     <string name="learning">Learning</string>
@@ -28,4 +29,10 @@
     <string name="view_diseases">View Diseases</string>
     <string name="general_information">General Information</string>
     <string name="predicted_disease">Predicted Disease</string>
+    <string name="use_anonymously">Use Anonymously</string>
+    <string name="upload_instruction">Click the \"Upload Image\" button to upload an image. Prediction occurs once image is selected.</string>
+    <string name="symptoms">Symptoms</string>
+    <string name="cause">Cause</string>
+    <string name="propagation">Propagation</string>
+    <string name="control">Control</string>
 </resources>

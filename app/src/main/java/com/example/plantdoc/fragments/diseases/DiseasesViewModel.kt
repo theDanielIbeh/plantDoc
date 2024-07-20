@@ -25,7 +25,7 @@ class DiseasesViewModel @Inject constructor(
     suspend fun getPlantDetails(diseaseId: Int): Disease? =
         diseaseRepository.getDiseaseById(diseaseId = diseaseId)
 
-    internal val diseases: LiveData<PagingData<Disease>> = _filterText.switchMap {
+    internal fun getDiseases(): LiveData<PagingData<Disease>> = _filterText.switchMap {
         diseaseRepository.getDiseasesByPlantIdPagingData(
             10,
             it,

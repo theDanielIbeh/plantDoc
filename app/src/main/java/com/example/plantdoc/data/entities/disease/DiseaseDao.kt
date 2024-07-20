@@ -13,6 +13,9 @@ interface DiseaseDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(disease: Disease)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(diseases: List<Disease>)
+
     @Query(
         "SELECT * FROM disease"
     )

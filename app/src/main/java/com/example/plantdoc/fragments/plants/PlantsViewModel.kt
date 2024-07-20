@@ -7,19 +7,26 @@ import androidx.lifecycle.switchMap
 import androidx.lifecycle.viewModelScope
 import androidx.paging.PagingData
 import androidx.paging.cachedIn
+import com.example.plantdoc.data.PlantDocPreferencesRepository
 import com.example.plantdoc.data.entities.plant.Plant
 import com.example.plantdoc.data.entities.plant.PlantRepository
+import com.example.plantdoc.utils.Constants
 import dagger.hilt.android.lifecycle.HiltViewModel
 import javax.inject.Inject
 
 @HiltViewModel
 class PlantsViewModel @Inject constructor(
     private val plantRepository: PlantRepository,
+    preferencesRepository: PlantDocPreferencesRepository
 ) : ViewModel() {
 
     private var _filterText: MutableLiveData<String> = MutableLiveData("%%")
     var filterText: String? = "%%"
 
+    val isLoggedIn = preferencesRepository.getPreference(
+        Boolean::class.java,
+        Constants.IS_LOGGED_IN
+    )
 
     suspend fun getPlantDetails(plantId: Int): Plant? =
         plantRepository.getPlantById(plantId = plantId)

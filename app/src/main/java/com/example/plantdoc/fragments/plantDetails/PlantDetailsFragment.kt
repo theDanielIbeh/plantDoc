@@ -1,14 +1,18 @@
 package com.example.plantdoc.fragments.plantDetails
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import com.bumptech.glide.Glide
 import com.example.plantdoc.databinding.FragmentPlantDetailsBinding
+import com.example.plantdoc.utils.HelperFunctions
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -25,20 +29,35 @@ class PlantDetailsFragment : Fragment() {
         binding = FragmentPlantDetailsBinding.inflate(inflater)
 
         // Allows Data Binding to Observe LiveData with the lifecycle of this Fragment
-        binding.lifecycleOwner = this
+        binding.lifecycleOwner = this.viewLifecycleOwner
         binding.viewModel = viewModel
         viewModel.plant = args.plant
 
-        viewModel.plant.let { product ->
-            product.imageUrl?.let {
+        viewModel.plant.let { plant ->
+            plant.imageUrl?.let {
                 loadImage(it)
             }
+        }
+
+        binding.btn.setOnClickListener {
+            findNavController().navigate(PlantDetailsFragmentDirections.actionPlantDetailsFragmentToDiseasesFragment(viewModel.plant))
         }
 
         return binding.root
     }
 
-    private fun loadImage(imgSrc: String) =
-        Glide.with(requireContext()).load(imgSrc)
-            .into(binding.plantImageView)
+    private fun loadImage(imgSrc: String) {
+        if (!HelperFunctions.isInternetAvailable(requireContext())) {
+            Toast.makeText(context, "Cannot load image. No internet connection.", Toast.LENGTH_SHORT).show()
+            return
+        }
+        try {
+            Glide.with(requireContext()).load(imgSrc)
+                .into(binding.plantImageView)
+        } catch (e: Exception) {
+            // Handle the error
+            Log.d("Exception", e.message.toString())
+            e.printStackTrace()
+        }
+    }
 }

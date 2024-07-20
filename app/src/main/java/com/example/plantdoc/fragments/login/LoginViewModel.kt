@@ -7,6 +7,7 @@ import com.example.plantdoc.data.entities.user.User
 import com.example.plantdoc.data.entities.user.UserRepository
 import com.example.plantdoc.data.PlantDocPreferencesRepository
 import com.example.plantdoc.data.PlantList
+import com.example.plantdoc.data.WorkManagerRepository
 import com.example.plantdoc.data.entities.disease.DiseaseRepository
 import com.example.plantdoc.data.entities.plant.PlantRepository
 import com.example.plantdoc.data.network.PlantDocApiService
@@ -28,14 +29,26 @@ class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val plantRepository: PlantRepository,
     private val diseaseRepository: DiseaseRepository,
-    private val apiService: PlantDocApiService,
     val preferencesRepository: PlantDocPreferencesRepository,
+    private val workManagerRepository: WorkManagerRepository
 ) : ViewModel() {
     private var _loginModel: MutableStateFlow<LoginModel> = MutableStateFlow(LoginModel())
     val loginModel: StateFlow<LoginModel> = _loginModel.asStateFlow()
 
+    val isLoggedIn = preferencesRepository.getPreference(
+        Boolean::class.java,
+        Constants.IS_LOGGED_IN
+    )
+
     suspend fun getUserDetails(email: String): User? {
         return userRepository.getUser(email = email)
+    }
+
+    suspend fun login(email: String, password: String) {
+        userRepository.login(
+            email = email,
+            password = password
+        )
     }
 
     fun loadUsers() {
@@ -54,15 +67,6 @@ class LoginViewModel @Inject constructor(
     fun resetLoginModel() {
         _loginModel.value = LoginModel()
     }
-    suspend fun savePreferences(it: User) {
-        preferencesRepository.savePreference(Constants.USER, it)
-        preferencesRepository.savePreference(Constants.IS_LOGGED_IN, true)
-    }
-
-    suspend fun saveAdminPreferences() {
-        preferencesRepository.savePreference(Constants.IS_ADMIN, true)
-        preferencesRepository.savePreference(Constants.IS_LOGGED_IN, true)
-    }
 
     fun insertData() {
         val plants = PlantList.list()
@@ -77,5 +81,9 @@ class LoginViewModel @Inject constructor(
                 diseaseRepository.insert(disease = disease)
             }
         }
+    }
+
+    fun downloadData() {
+        workManagerRepository.download()
     }
 }

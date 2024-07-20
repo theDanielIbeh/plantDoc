@@ -6,12 +6,17 @@ import android.view.ViewGroup
 import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
+import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.databinding.HistoryRecyclerItemBinding
+import com.example.plantdoc.utils.Constants
+import com.example.plantdoc.utils.HelperFunctions
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import java.lang.Exception
+import kotlinx.coroutines.withContext
+import java.text.SimpleDateFormat
+import java.util.Locale
 
 val TRANSACTION_MODEL_COMPARATOR = object : DiffUtil.ItemCallback<History>() {
     override fun areItemsTheSame(
@@ -19,7 +24,7 @@ val TRANSACTION_MODEL_COMPARATOR = object : DiffUtil.ItemCallback<History>() {
         newItem: History
     ): Boolean =
         // User ID serves as unique ID
-        oldItem.id == newItem.id
+        oldItem.date == newItem.date
 
     override fun areContentsTheSame(
         oldItem: History,
@@ -31,6 +36,7 @@ val TRANSACTION_MODEL_COMPARATOR = object : DiffUtil.ItemCallback<History>() {
 
 class HistoryPagingDataAdapter(
     val mContext: Context,
+    val listener: HistoryListener
 ) : PagingDataAdapter<History, HistoryPagingDataAdapter.ViewHolder>(
     TRANSACTION_MODEL_COMPARATOR
 ) {
@@ -69,12 +75,23 @@ class HistoryPagingDataAdapter(
                 }
 
                 CoroutineScope(Dispatchers.Main).launch {
-
+                    val disease =
+                        withContext(Dispatchers.IO) { listener.getDisease(history.predictedClassId) }
+                    with(binding) {
+                        tvDateValue.text = history.date
+                        tvPredictionValue.text = disease?.name ?: ""
+                        viewDetailsButton.setOnClickListener { listener.viewHistoryDetails(history) }
+                    }
                     binding.executePendingBindings()
                 }
             } catch (e: Exception) {
                 e.printStackTrace()
             }
         }
+    }
+
+    interface HistoryListener {
+        suspend fun getDisease(diseaseId: Int): Disease?
+        fun viewHistoryDetails(history: History)
     }
 }

@@ -24,7 +24,6 @@ import androidx.navigation.fragment.navArgs
 import com.cloudinary.android.MediaManager
 import com.cloudinary.android.callback.ErrorInfo
 import com.cloudinary.android.callback.UploadCallback
-import com.example.plantdoc.MainActivity
 import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.databinding.FragmentResultBinding
 import com.example.plantdoc.ml.TomatoModel
@@ -60,7 +59,6 @@ class ResultFragment : Fragment() {
     private val viewModel: ResultViewModel by viewModels()
     private var imageSize: Int = 224
     private var currentPhotoPath: String? = null
-    private var config: HashMap<String?, String?> = HashMap()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -68,8 +66,6 @@ class ResultFragment : Fragment() {
     ): View {
         // Inflate the layout for this fragment
         binding = FragmentResultBinding.inflate(inflater, container, false)
-
-//        configCloudinary()
 
         val uri = Uri.parse(arguments.uri)
         setImage(uri)
@@ -80,51 +76,82 @@ class ResultFragment : Fragment() {
 
         return binding.root
     }
-    private fun configCloudinary() {
-        config["cloud_name"] = "dkwvmnamr"
-        config["api_key"] = "868793386732371";
-        config["api_secret"] = "FXeMjkU_OoJX-7tP5zxnNqOZz_c";
-        MediaManager.init(requireContext(), config);
-    }
 
     private fun setImage(uri: Uri) {
-        lifecycleScope.launch {
+        val filePath = getRealPathFromURIAPI19(requireContext(), uri)
+        Log.d("MainActivity", "RealPath: $filePath")
 
-            val filePath = getRealPathFromURIAPI19(requireContext(), uri)
-            Log.d("MainActivity", "RealPath: $filePath")
+        var image: Bitmap? = null
+        try {
+            image = BitmapFactory.decodeFile(filePath)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+        binding.imageView.setImageBitmap(image)
 
-            var image: Bitmap? = null
-            try {
-                image = BitmapFactory.decodeFile(filePath)
-            } catch (e: IOException) {
-                e.printStackTrace()
-            }
-            binding.imageView.setImageBitmap(image)
-            val photoFile: File? = try {
-                createImageFile(requireContext())
-            } catch (ex: IOException) {
-                null
-            }
-            Log.d("MainActivity", photoFile?.absolutePath.toString())
-            photoFile?.also {
-                File(filePath).let { sourceFile ->
-                    sourceFile.copyTo(File(currentPhotoPath))
-                    compressImage(currentPhotoPath!!)
-                    Log.d("MainActivity", "Here")
-                    File(currentPhotoPath).absolutePath?.let { uploadToCloudinary(it) }
+        viewModel.isLoggedIn.observe(viewLifecycleOwner) { isLoggedIn ->
+            if (isLoggedIn == true) {
+                viewModel.loggedInUser.observe(viewLifecycleOwner) { user ->
+                    lifecycleScope.launch {
+                        val photoFile: File? = try {
+                            createImageFile(requireContext())
+                        } catch (ex: IOException) {
+                            null
+                        }
+                        Log.d("MainActivity", photoFile?.absolutePath.toString())
+                        photoFile?.also {
+                            File(filePath).let { sourceFile ->
+                                sourceFile.copyTo(File(currentPhotoPath))
+                                compressImage(currentPhotoPath!!)
+                                Log.d("MainActivity", "Here")
+                                File(currentPhotoPath).absolutePath?.let { uploadToCloudinary(it) }
+                            }
+                            viewModel.resultModel.value.localUrl = it.absolutePath
+                        }
+
+                        image = Bitmap.createScaledBitmap(image!!, imageSize, imageSize, true)
+                        val predictedIndex = classifyImage(image!!)
+                        if (predictedIndex == 9) {
+                            binding.isHealthy = true
+                        } else {
+                            loadDiseaseDetails(predictedIndex)
+                            user?.let { viewModel.insertHistory(userId = user.id) }
+                        }
+                    }
                 }
-                viewModel.resultModel.value.localUrl = it.absolutePath
+            } else {
+                image = Bitmap.createScaledBitmap(image!!, imageSize, imageSize, true)
+                val predictedIndex = classifyImage(image!!)
+                if (predictedIndex == 9) {
+                    binding.isHealthy = true
+                } else {
+                    lifecycleScope.launch {
+                        loadDiseaseDetails(predictedIndex)
+                    }
+                }
             }
+        }
+    }
 
-            image = Bitmap.createScaledBitmap(image!!, imageSize, imageSize, true)
-            val predictedIndex = classifyImage(image!!)
-            viewModel.disease =
-                withContext(Dispatchers.IO) { getDiseaseByIndex(predictedIndex) }
-            binding.result.text = viewModel.disease?.name
-            viewModel.disease?.let { viewModel.resultModel.value.predictedClass = it.id }
+    private suspend fun loadDiseaseDetails(predictedIndex: Int) {
+        binding.isHealthy = false
+        viewModel.disease =
+            withContext(Dispatchers.IO) { getDiseaseByIndex(predictedIndex) }
+        binding.disease.text = viewModel.disease?.name
 
-            viewModel.loggedInUser.observe(viewLifecycleOwner) {
-                it?.let { viewModel.insertHistory(userId = it.id) }
+        viewModel.plant =
+            withContext(Dispatchers.IO) {
+                viewModel.disease?.plantId?.let { viewModel.getPlantById(it) }
+            }
+        binding.plant.text = viewModel.plant?.name
+        viewModel.disease?.let { disease ->
+            viewModel.resultModel.value.predictedClass = disease.id
+            binding.viewInfo.setOnClickListener {
+                findNavController().navigate(
+                    ResultFragmentDirections.actionResultFragmentToDiseaseDetailsFragment(
+                        disease
+                    )
+                )
             }
         }
     }
@@ -238,7 +265,6 @@ class ResultFragment : Fragment() {
             Log.d("Confidences", confidences.size.toString())
             Log.d("MaxConfidence", maxConfidence.toString())
             Log.d("maxPos", maxPos.toString())
-            Log.d("Class", binding.result.text.toString())
 
             // Releases model resources if no longer used.
             model.close()

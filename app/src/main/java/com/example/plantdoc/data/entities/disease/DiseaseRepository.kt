@@ -9,6 +9,7 @@ import javax.inject.Inject
 
 interface DiseaseRepository {
     suspend fun insert(disease: Disease)
+    suspend fun insert(diseases: List<Disease>)
     suspend fun getAllDiseases(): LiveData<List<Disease>>
     suspend fun getDiseasesByPlantId(plantId: Int): LiveData<List<Disease>>
     fun getDiseasesByPlantIdPagingData(
@@ -26,6 +27,10 @@ class DiseaseRepositoryImpl @Inject constructor(
 ) : DiseaseRepository {
     override suspend fun insert(disease: Disease) {
         diseaseDao.insert(disease = disease)
+    }
+
+    override suspend fun insert(diseases: List<Disease>) {
+        diseaseDao.insert(diseases = diseases)
     }
 
     override suspend fun getAllDiseases(): LiveData<List<Disease>> =

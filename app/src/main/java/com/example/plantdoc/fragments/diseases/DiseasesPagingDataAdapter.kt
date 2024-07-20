@@ -47,7 +47,7 @@ class DiseasesPagingDataAdapter(
     // Complex data items may need more than one view per item, and
     // you provide access to all the views for a data item in a view holder.
     // Each data item is just a Product object.
-    inner class HomeViewHolder(binding: DiseasesRecyclerItemBinding) :
+    inner class HomeViewHolder(private val binding: DiseasesRecyclerItemBinding) :
         RecyclerView.ViewHolder(binding.root) {
         fun bind(disease: Disease?, position: Int) {
             try {
@@ -55,7 +55,13 @@ class DiseasesPagingDataAdapter(
                     return
                 }
 
+                binding.disease = disease
 
+                binding.apply {
+                    viewDetailsButton.setOnClickListener {
+                        listener.viewDiseaseDetails(disease)
+                    }
+                }
 
             } catch (e: Exception) {
                 e.printStackTrace()

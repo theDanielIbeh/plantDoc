@@ -1,27 +1,39 @@
 package com.example.plantdoc.utils
 
+import android.annotation.SuppressLint
+import android.app.Activity
 import android.app.DatePickerDialog
 import android.content.ContentUris
 import android.content.Context
 import android.content.Intent
 import android.database.Cursor
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import android.net.Uri
 import android.os.Build
 import android.os.Environment
 import android.provider.DocumentsContract
 import android.provider.MediaStore
 import android.text.TextUtils
+import android.util.Log
 import android.view.Menu
 import android.view.MenuInflater
 import android.view.MenuItem
+import android.view.View
+import android.view.inputmethod.InputMethodManager
 import android.widget.EditText
 import androidx.core.view.MenuProvider
 import androidx.fragment.app.FragmentActivity
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.NavHostFragment
 import com.example.plantdoc.MainActivity
 import com.example.plantdoc.R
 import com.example.plantdoc.data.PlantDocPreferencesRepository
+import com.example.plantdoc.fragments.history.HistoryFragment
+import com.example.plantdoc.fragments.plants.PlantsFragment
+import com.example.plantdoc.fragments.upload.UploadFragment
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 import java.io.File
 import java.io.FileOutputStream
@@ -60,26 +72,59 @@ object HelperFunctions {
 
     fun setMenu(
         activity: FragmentActivity,
-        biblioHubPreferencesRepository: PlantDocPreferencesRepository
+        preferencesRepository: PlantDocPreferencesRepository
     ) {
+        val isLoggedIn = preferencesRepository.getPreference(
+            Boolean::class.java,
+            Constants.IS_LOGGED_IN
+        )
         activity.addMenuProvider(object : MenuProvider {
             override fun onCreateMenu(menu: Menu, menuInflater: MenuInflater) {
                 menuInflater.inflate(R.menu.main_menu, menu)
             }
 
+            override fun onPrepareMenu(menu: Menu) {
+                isLoggedIn.observe(activity) {loggedIn ->
+                    loggedIn?.let {
+                        val menuItem= menu.findItem(R.id.history_item)
+                        menuItem?.setVisible(loggedIn)
+                    }
+                }
+                super.onPrepareMenu(menu)
+            }
+
             override fun onMenuItemSelected(menuItem: MenuItem): Boolean {
+                val navController =
+                    (activity.supportFragmentManager.findFragmentById(R.id.app_nav_host_fragment) as NavHostFragment).navController
                 // Handle the menu selection
                 menuItem.setChecked(true)
                 return when (menuItem.itemId) {
                     android.R.id.home -> {
-                        activity.onBackPressedDispatcher.onBackPressed()
+                        navController.navigateUp()
+//                        activity.onBackPressedDispatcher.onBackPressed()
                         true
                     }
 
+//                    R.id.home_item -> {
+//                       navController.popBackStack(R.id.uploadFragment, false)
+//                        true
+//                    }
+//
+//                    R.id.history_item -> {
+//                        navController.navigate(R.id.historyFragment)
+//                        navController.clearBackStack(R.id.historyFragment)
+//                        true
+//                    }
+//
+//                    R.id.learning_item -> {
+//                        navController.navigate(R.id.plantsFragment)
+//                        navController.clearBackStack(R.id.plantsFragment)
+//                        true
+//                    }
 
                     R.id.log_out -> {
                         activity.lifecycleScope.launch {
-                            logout(biblioHubPreferencesRepository, activity)
+                            logout(preferencesRepository, activity)
                         }
                         true
                     }
@@ -99,6 +144,25 @@ object HelperFunctions {
         val intent = Intent(activity, MainActivity::class.java)
         intent.flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
         activity.startActivity(intent)
+    }
+
+    fun isInternetAvailable(context: Context): Boolean {
+        val connectivityManager =
+            context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            val network = connectivityManager.activeNetwork ?: return false
+            val activeNetwork = connectivityManager.getNetworkCapabilities(network) ?: return false
+            return when {
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_WIFI) -> true
+                activeNetwork.hasTransport(NetworkCapabilities.TRANSPORT_CELLULAR) -> true
+                else -> false
+            }
+        } else {
+            @Suppress("DEPRECATION")
+            val networkInfo = connectivityManager.activeNetworkInfo ?: return false
+            @Suppress("DEPRECATION")
+            return networkInfo.isConnected
+        }
     }
 
     fun displayDatePicker(
@@ -170,6 +234,17 @@ object HelperFunctions {
             dateFormat.timeZone = TimeZone.getTimeZone(timeZone)
         }
         return dateFormat.format(date)
+    }
+
+    fun hideKeyboard(activity: Activity) {
+        val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
+        //Find the currently focused view, so we can grab the correct window token from it.
+        var view = activity.currentFocus
+        //If no view currently has focus, create a new one, just so we can grab a window token from it
+        if (view == null) {
+            view = View(activity)
+        }
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     fun getRealPathFromURIAPI19(context: Context, uri: Uri): String? {

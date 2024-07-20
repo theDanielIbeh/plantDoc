@@ -1,11 +1,14 @@
 package com.example.plantdoc.fragments.register
 
+import android.app.Activity
 import android.os.Bundle
+import android.util.Log
 import android.view.KeyEvent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.view.inputmethod.EditorInfo
+import android.view.inputmethod.InputMethodManager
 import android.widget.Toast
 import androidx.core.widget.doAfterTextChanged
 import androidx.fragment.app.Fragment
@@ -15,10 +18,13 @@ import androidx.navigation.fragment.findNavController
 import com.example.plantdoc.R
 import com.example.plantdoc.databinding.FragmentRegisterBinding
 import com.example.plantdoc.utils.FormFunctions
+import com.example.plantdoc.utils.HelperFunctions
+import com.example.plantdoc.utils.HelperFunctions.hideKeyboard
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
+
 
 @AndroidEntryPoint
 class RegisterFragment : Fragment() {
@@ -82,7 +88,7 @@ class RegisterFragment : Fragment() {
                     confirmPassword = confirmPassword
                 )
                 if (isFormValid) {
-                    proceedToLoginScreen(email = email)
+                    proceedToLoginScreen()
                 } else {
                     Toast.makeText(
                         requireContext(),
@@ -99,19 +105,33 @@ class RegisterFragment : Fragment() {
         return binding.root
     }
 
-    private fun proceedToLoginScreen(email: String) {
+    private fun proceedToLoginScreen() {
         lifecycleScope.launch {
-            val user = withContext(Dispatchers.IO) { viewModel.getUserDetails(email = email) }
-            if (user == null) {
+            hideKeyboard(requireActivity())
+            if (!HelperFunctions.isInternetAvailable(requireContext())) {
+                withContext(Dispatchers.Main) {
+                    Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show()
+                }
+                return@launch
+            }
+            try {
                 viewModel.insertUser()
                 navigateToLoginScreen()
-//                viewModel.resetRegisterModel()
-            } else {
-                Toast.makeText(
-                    requireContext(),
-                    "User already exists!",
-                    Toast.LENGTH_SHORT
-                ).show()
+                // Handle the user data
+            } catch (e: Exception) {
+                // Handle the error
+                Log.d("Insert User", "Failure")
+                Log.d("Exception", e.message.toString())
+                Log.d("Exception", e.message.toString())
+                if (e.message == "Email already exists") {
+                    binding.emailLayout.error = "Email not registered"
+                    Toast.makeText(
+                        requireContext(),
+                        e.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                }
+                e.printStackTrace()
             }
         }
     }

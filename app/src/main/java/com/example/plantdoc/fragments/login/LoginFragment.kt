@@ -19,10 +19,10 @@ import com.example.plantdoc.R
 import com.example.plantdoc.databinding.FragmentLoginBinding
 import com.example.plantdoc.utils.FormFunctions.validateLoginEmail
 import com.example.plantdoc.utils.FormFunctions.validateLoginPassword
+import com.example.plantdoc.utils.HelperFunctions.hideKeyboard
+import com.example.plantdoc.utils.HelperFunctions.isInternetAvailable
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import kotlinx.coroutines.withContext
 
 @AndroidEntryPoint
 class LoginFragment : Fragment() {
@@ -76,8 +76,12 @@ class LoginFragment : Fragment() {
             newUserAction.setOnClickListener {
                 navigateToRegisterScreen()
             }
+
+            anonymousAction.setOnClickListener {
+                navigateToHomeScreen()
+            }
         }
-        viewModel.insertData()
+//        viewModel.insertData()
         return binding.root
     }
 
@@ -86,21 +90,42 @@ class LoginFragment : Fragment() {
         password: String
     ) {
         lifecycleScope.launch {
-            val user =
-                withContext(Dispatchers.IO) { viewModel.getUserDetails(email = email) }
-            if (user != null) {
-                if (user.password == password) {
-                    viewModel.savePreferences(user)
-                        val intent = Intent(requireContext(), AppActivity::class.java)
-                        startActivity(intent)
-                        viewModel.resetLoginModel()
-                } else {
+            hideKeyboard(requireActivity())
+            if (!isInternetAvailable(requireContext())) {
+                Toast.makeText(context, "No internet connection", Toast.LENGTH_SHORT).show()
+                return@launch
+            }
+            try {
+                viewModel.login(email = email, password = password)
+                Toast.makeText(requireContext(), "Login successful", Toast.LENGTH_SHORT).show()
+                navigateToHomeScreen()
+                viewModel.resetLoginModel()
+            } catch (e: Exception) {
+                // Handle the error
+                Log.d("Exception", e.message.toString())
+                if (e.message == "Wrong password") {
                     binding.passwordLayout.error = "Incorrect password"
+                    Toast.makeText(
+                        requireContext(),
+                        e.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
+                } else if (e.message == "Unregistered email") {
+                    binding.usernameLayout.error = "Unregistered email"
+                    Toast.makeText(
+                        requireContext(),
+                        e.message,
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            } else {
-                binding.usernameLayout.error = "This email is not registered"
+                e.printStackTrace()
             }
         }
+    }
+
+    private fun navigateToHomeScreen() {
+        val intent = Intent(requireContext(), AppActivity::class.java)
+        startActivity(intent)
     }
 
     private fun navigateToRegisterScreen() {

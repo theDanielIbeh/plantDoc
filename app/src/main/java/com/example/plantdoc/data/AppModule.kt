@@ -29,13 +29,16 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import kotlinx.serialization.json.Json
 import okhttp3.MediaType.Companion.toMediaType
+import okhttp3.OkHttpClient
+import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
 
 
 const val PLANT_DOC_PREFERENCE_NAME = "plantdoc_preferences"
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
+val Context.dataStore: DataStore<Preferences> by preferencesDataStore(
     name = PLANT_DOC_PREFERENCE_NAME
 )
 
@@ -65,6 +68,12 @@ abstract class AppRepositoryModule {
 object AppModule {
 
     private const val BASE_URL = "http://10.0.2.2:5000/"
+    // Setup logging using OkHttp
+    private val logger = HttpLoggingInterceptor().setLevel(HttpLoggingInterceptor.Level.BODY)
+    private val okHttpClient = OkHttpClient.Builder().addInterceptor(logger)
+        .connectTimeout(5, TimeUnit.MINUTES)
+        .readTimeout(5, TimeUnit.MINUTES)
+        .callTimeout(5, TimeUnit.MINUTES)
 //    private val gson = GsonBuilder().excludeFieldsWithoutExposeAnnotation().create()
 
     /**
@@ -75,6 +84,7 @@ object AppModule {
     fun provideRetrofit(): Retrofit = Retrofit.Builder()
         .addConverterFactory(GsonConverterFactory.create())
         .baseUrl(BASE_URL)
+        .client(okHttpClient.build())
         .build()
 
     @Provides
@@ -120,5 +130,12 @@ object AppModule {
     fun providePreferenceRepository(context: Context): PlantDocPreferencesRepository {
         val plantDocPreferencesRepository = PlantDocPreferencesRepository(context.dataStore)
         return plantDocPreferencesRepository
+    }
+
+    @Singleton
+    @Provides
+    fun provideWorkRepository(context: Context): WorkManagerRepository {
+        val workRepository = WorkManagerRepository(context)
+        return workRepository
     }
 }

@@ -10,28 +10,24 @@ import kotlinx.serialization.Serializable
 
 @Entity(tableName = "user")
 data class User(
-    @PrimaryKey(autoGenerate = true)
+    @PrimaryKey
+    @ColumnInfo(name = "id")
     @SerializedName("id")
-    @Expose
     val id: Int = 0,
 
     @ColumnInfo(name = "first_name")
     @SerializedName("first_name")
-    @Expose
     var firstName: String,
 
     @ColumnInfo(name = "last_name")
     @SerializedName("last_name")
-    @Expose
     var lastName: String,
 
     @ColumnInfo(name = "email")
     @SerializedName("email")
-    @Expose
     var email: String,
 
     @ColumnInfo(name = "password")
     @SerializedName("password")
-    @Expose
     var password: String
 )

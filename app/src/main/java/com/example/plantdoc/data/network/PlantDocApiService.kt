@@ -21,9 +21,11 @@ import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.data.entities.plant.Plant
 import com.example.plantdoc.data.entities.user.User
-import com.example.plantdoc.data.network.responses.UsersResponse
+import com.example.plantdoc.data.network.responses.GeneralResponse
 import retrofit2.Response
 import retrofit2.http.Body
+import retrofit2.http.Field
+import retrofit2.http.FormUrlEncoded
 import retrofit2.http.GET
 import retrofit2.http.POST
 import retrofit2.http.Query
@@ -35,26 +37,30 @@ interface PlantDocApiService {
 
 //    Users
     @POST("users/create")
-    suspend fun insertUser(@Body user: User): Response<UsersResponse>
+    suspend fun insertUser(@Body user: User): Response<GeneralResponse<User>>
+
+    @FormUrlEncoded
+    @POST("login")
+    suspend fun login(@Field("email") email: String, @Field("password") password: String): Response<GeneralResponse<User>>
 
     @GET("users")
-    suspend fun getUsers(): List<User>
+    suspend fun getUsers(): Response<GeneralResponse<User>>
 
 //    History
-    @POST("history")
-    suspend fun insertHistory(@Body history: History)
+    @POST("history/create")
+    suspend fun insertHistory(@Body history: History): Response<GeneralResponse<History>>
 
     @POST("history")
     suspend fun getHistory(
         @Query("user_id")
-        userID: String,
-    ): List<History>
+        userID: Int,
+    ): Response<GeneralResponse<History>>
 
 //    Plants
     @GET("plants")
-    suspend fun getPlants(): List<Plant>
+    suspend fun getPlants(): Response<GeneralResponse<Plant>>
 
 //    Diseases
     @GET("diseases")
-    suspend fun getDiseases(): List<Disease>
+    suspend fun getDiseases(): Response<GeneralResponse<Disease>>
 }

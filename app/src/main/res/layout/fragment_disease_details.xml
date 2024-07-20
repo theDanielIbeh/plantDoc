@@ -19,17 +19,17 @@
             app:layout_constraintEnd_toEndOf="parent"
             app:layout_constraintStart_toStartOf="parent"
             app:layout_constraintTop_toTopOf="parent"
-            android:layout_marginStart="16dp"
-            android:layout_marginEnd="16dp"
             android:fillViewport="true">
 
             <androidx.constraintlayout.widget.ConstraintLayout
                 android:id="@+id/content_constraint_layout"
+                android:layout_marginStart="16dp"
+                android:layout_marginEnd="16dp"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent">
 
                 <com.google.android.material.imageview.ShapeableImageView
-                    android:id="@+id/plant_image_view"
+                    android:id="@+id/disease_image_view"
                     android:layout_width="match_parent"
                     android:layout_height="300dp"
                     android:layout_marginStart="8dp"
@@ -51,7 +51,7 @@
                     android:textAlignment="textStart"
                     android:textStyle="bold"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@+id/plant_image_view"
+                    app:layout_constraintTop_toBottomOf="@+id/disease_image_view"
                     tools:layout_editor_absoluteY="8dp" />
 
                 <com.google.android.material.textview.MaterialTextView
@@ -66,7 +66,7 @@
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toEndOf="@+id/name_title_text_view"
-                    app:layout_constraintTop_toBottomOf="@+id/plant_image_view"
+                    app:layout_constraintTop_toBottomOf="@+id/disease_image_view"
                     tools:layout_editor_absoluteY="8dp"
                     tools:text="Book" />
 
@@ -76,18 +76,18 @@
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textAlignment="textStart"
-                    android:textStyle="bold"
+                    android:text="@={viewModel.disease.botanicalName}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
                     app:layout_constraintTop_toBottomOf="@+id/name_text_view"
                     tools:text="Book" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/general_info_title_text_view"
+                    android:id="@+id/symptoms_title_text_view"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
-                    android:text="@string/general_information"
+                    android:text="@string/symptoms"
                     android:textAlignment="textStart"
                     android:textStyle="bold"
                     app:layout_constraintEnd_toEndOf="parent"
@@ -95,14 +95,87 @@
                     app:layout_constraintTop_toBottomOf="@id/botanical_name_text_view" />
 
                 <com.google.android.material.textview.MaterialTextView
-                    android:id="@+id/general_info_text_view"
+                    android:id="@+id/symptoms_text_view"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginTop="4dp"
                     android:textAlignment="textStart"
+                    android:text="@={viewModel.disease.symptoms}"
                     app:layout_constraintEnd_toEndOf="parent"
                     app:layout_constraintStart_toStartOf="parent"
-                    app:layout_constraintTop_toBottomOf="@id/general_info_title_text_view"
+                    app:layout_constraintTop_toBottomOf="@id/symptoms_title_text_view"
+                    tools:text="Book" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/cause_title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/cause"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/symptoms_text_view" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/cause_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAlignment="textStart"
+                    android:text="@={viewModel.disease.cause}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cause_title_text_view"
+                    tools:text="Book" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/propagation_title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/propagation"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/cause_text_view" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/propagation_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAlignment="textStart"
+                    android:text="@={viewModel.disease.propagation}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/propagation_title_text_view"
+                    tools:text="Book" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/control_title_text_view"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:text="@string/control"
+                    android:textAlignment="textStart"
+                    android:textStyle="bold"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/propagation_text_view" />
+
+                <com.google.android.material.textview.MaterialTextView
+                    android:id="@+id/control_text_view"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="4dp"
+                    android:textAlignment="textStart"
+                    android:text="@={viewModel.disease.control}"
+                    app:layout_constraintEnd_toEndOf="parent"
+                    app:layout_constraintStart_toStartOf="parent"
+                    app:layout_constraintTop_toBottomOf="@id/control_title_text_view"
                     tools:text="Book" />
             </androidx.constraintlayout.widget.ConstraintLayout>
         </androidx.core.widget.NestedScrollView>

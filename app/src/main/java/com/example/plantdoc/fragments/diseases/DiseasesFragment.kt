@@ -3,9 +3,10 @@ package com.example.plantdoc.fragments.diseases
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import androidx.activity.OnBackPressedCallback
+import android.widget.ImageButton
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
+import androidx.navigation.fragment.findNavController
 import androidx.navigation.fragment.navArgs
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.DefaultItemAnimator
@@ -17,6 +18,7 @@ import com.example.plantdoc.data.entities.plant.Plant
 import com.example.plantdoc.databinding.FragmentDiseasesBinding
 import com.example.plantdoc.fragments.plantDetails.PlantDetailsFragmentArgs
 import com.example.plantdoc.utils.BaseSearchableFragment
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -35,14 +37,20 @@ class DiseasesFragment : BaseSearchableFragment<Plant>(),
     private lateinit var binding: FragmentDiseasesBinding
     private lateinit var adapter: DiseasesPagingDataAdapter
     private val args: DiseasesFragmentArgs by navArgs()
+    override var viewModelFilterText: String? = null
+    override var searchCallback: ((String) -> Unit)? = null
+    override var searchButton: ImageButton? = null
+    override var searchText: TextInputEditText? = null
 
     override fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
         binding = FragmentDiseasesBinding.inflate(inflater, container, false)
         binding.lifecycleOwner = this.viewLifecycleOwner
         binding.viewModel = viewModel
-        viewModel.plant = args.plant
 
-        setOnBackPressedCallback()
+        searchButton = binding.imageButtonStopSearch
+        searchText = binding.etSearch
+
+        viewModel.plant = args.plant
     }
 
     override fun initCompulsoryVariables() {
@@ -59,7 +67,7 @@ class DiseasesFragment : BaseSearchableFragment<Plant>(),
     override fun initRecycler() {
         adapter = DiseasesPagingDataAdapter(requireContext(), this)
         lifecycleScope.launch {
-            viewModel.diseases.observe(viewLifecycleOwner) { pagingData ->
+            viewModel.getDiseases().observe(viewLifecycleOwner) { pagingData ->
                 // submitData suspends until loading this generation of data stops
                 // so be sure to use collectLatest {} when presenting a Flow<PagingData>
                     adapter.submitData(lifecycle, pagingData)
@@ -88,22 +96,11 @@ class DiseasesFragment : BaseSearchableFragment<Plant>(),
         binding.noOfResultsTextview.text = getString(R.string.y_results, size)
     }
 
-    private fun setOnBackPressedCallback() {
-        val callback: OnBackPressedCallback =
-            object : OnBackPressedCallback(true /* enabled by default */) {
-                override fun handleOnBackPressed() {
-                    requireActivity().finishAffinity()
-                    exitProcess(0)
-                }
-            }
-        requireActivity().onBackPressedDispatcher.addCallback(viewLifecycleOwner, callback)
-    }
-
     override fun viewDiseaseDetails(disease: Disease) {
-//        findNavController().navigate(
-//            PlantsFragment.actionAdminOrdersFragmentToAdminOrderDetailsFragment(
-//                plant = plant
-//            )
-//        )
+        findNavController().navigate(
+            DiseasesFragmentDirections.actionDiseasesFragmentToDiseaseDetailsFragment(
+                disease = disease
+            )
+        )
     }
 }

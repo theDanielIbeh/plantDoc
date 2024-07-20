@@ -3,14 +3,12 @@ package com.example.plantdoc.fragments.plants
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
+import android.widget.ImageButton
 import androidx.activity.OnBackPressedCallback
-import androidx.core.widget.doOnTextChanged
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.navigation.fragment.findNavController
 import androidx.paging.LoadState
-import androidx.paging.filter
 import androidx.recyclerview.widget.DefaultItemAnimator
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.SimpleItemAnimator
@@ -18,6 +16,7 @@ import com.example.plantdoc.R
 import com.example.plantdoc.data.entities.plant.Plant
 import com.example.plantdoc.databinding.FragmentPlantsBinding
 import com.example.plantdoc.utils.BaseSearchableFragment
+import com.google.android.material.textfield.TextInputEditText
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.map
@@ -35,13 +34,24 @@ class PlantsFragment : BaseSearchableFragment<Plant>(),
     private val viewModel: PlantsViewModel by viewModels()
     private lateinit var binding: FragmentPlantsBinding
     private lateinit var adapter: PlantsPagingDataAdapter
+    override var viewModelFilterText: String? = null
+    override var searchCallback: ((String) -> Unit)? = null
+    override var searchButton: ImageButton? = null
+    override var searchText: TextInputEditText? = null
 
     override fun initBinding(inflater: LayoutInflater, container: ViewGroup?) {
         binding = FragmentPlantsBinding.inflate(inflater, container, false)
-        binding.lifecycleOwner = this.viewLifecycleOwner
         binding.viewModel = viewModel
+        searchButton = binding.imageButtonStopSearch
+        searchText = binding.etSearch
 
-        setOnBackPressedCallback()
+//        viewModel.isLoggedIn.observe(viewLifecycleOwner) {
+//            if (it == true) {
+//                setOnBackPressedCallback()
+//            } else  {
+//                findNavController().clearBackStack(this.id)
+//            }
+//        }
     }
 
     override fun initCompulsoryVariables() {
@@ -61,7 +71,7 @@ class PlantsFragment : BaseSearchableFragment<Plant>(),
             viewModel.plants.observe(viewLifecycleOwner) { pagingData ->
                 // submitData suspends until loading this generation of data stops
                 // so be sure to use collectLatest {} when presenting a Flow<PagingData>
-                    adapter.submitData(lifecycle, pagingData)
+                adapter.submitData(lifecycle, pagingData)
                 lifecycleScope.launch {
                     adapter.loadStateFlow.map { it.refresh }
                         .distinctUntilChanged()
@@ -99,10 +109,10 @@ class PlantsFragment : BaseSearchableFragment<Plant>(),
     }
 
     override fun viewPlantDetails(plant: Plant) {
-//        findNavController().navigate(
-//            PlantsFragment.actionAdminOrdersFragmentToAdminOrderDetailsFragment(
-//                plant = plant
-//            )
-//        )
+        findNavController().navigate(
+            PlantsFragmentDirections.actionPlantsFragmentToPlantDetailsFragment(
+                plant = plant
+            )
+        )
     }
 }

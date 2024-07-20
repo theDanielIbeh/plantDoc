@@ -1,6 +1,7 @@
 package com.example.plantdoc.fragments.historyDetails
 
 import androidx.lifecycle.ViewModel
+import com.example.plantdoc.data.entities.disease.Disease
 import com.example.plantdoc.data.entities.disease.DiseaseRepository
 import com.example.plantdoc.data.entities.history.History
 import com.example.plantdoc.data.entities.history.HistoryRepository
@@ -15,4 +16,8 @@ class HistoryDetailsViewModel @Inject constructor(
     private val historyRepository: HistoryRepository,
 ) : ViewModel() {
     lateinit var history: History
+    var disease: Disease? = null
+
+    suspend fun getDisease(diseaseId: Int) =
+        diseaseRepository.getDiseaseById(diseaseId = diseaseId)
 }
