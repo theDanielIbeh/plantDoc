@@ -1,6 +1,6 @@
 <resources>
-    <string name="app_name">PlantDoc</string>
-    <string name="login_title">Welcome to PlantDoc!</string>
+    <string name="app_name">PlantDoctor</string>
+    <string name="login_title">Welcome to PlantDoctor!</string>
     <string name="register_title">Join Us!</string>
     <string name="login_desc">Enter your username and password to proceed.</string>
     <string name="register_desc">Fill in the required details below, to proceed.</string>
@@ -11,7 +11,7 @@
     <string name="password">Password</string>
     <string name="confirm_password">Confirm Password</string>
     <string name="login"><u>Login</u></string>
-    <string name="new_user_message">New to PlantDoc?</string>
+    <string name="new_user_message">New to PlantDoctor?</string>
     <string name="existing_user_message">Already Registered?</string>
     <string name="register"><u>Register</u></string>
     <string name="log_out">Log out</string>
@@ -30,7 +30,7 @@
     <string name="general_information">General Information</string>
     <string name="predicted_disease">Predicted Disease</string>
     <string name="use_anonymously">Use Anonymously</string>
-    <string name="upload_instruction">Click the \"Upload Image\" button to upload an image. Prediction occurs once image is selected.</string>
+    <string name="upload_instruction">Click the \"Upload Image\" button to upload the leaf image. Prediction occurs once image is selected.</string>
     <string name="symptoms">Symptoms</string>
     <string name="cause">Cause</string>
     <string name="propagation">Propagation</string>

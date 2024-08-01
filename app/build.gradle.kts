@@ -9,11 +9,11 @@ plugins {
 }
 
 android {
-    namespace = "com.example.plantdoc"
+    namespace = "com.example.plantdoctor"
     compileSdk = 34
 
     defaultConfig {
-        applicationId = "com.example.plantdoc"
+        applicationId = "com.example.plantdoctor"
         minSdk = 24
         targetSdk = 34
         versionCode = 1

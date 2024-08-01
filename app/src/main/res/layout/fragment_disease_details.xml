@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.diseaseDetails.DiseaseDetailsViewModel" />
+            type="com.example.plantdoctor.fragments.diseaseDetails.DiseaseDetailsViewModel" />
     </data>
 
         <androidx.core.widget.NestedScrollView

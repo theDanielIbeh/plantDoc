@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.historyDetails.HistoryDetailsViewModel" />
+            type="com.example.plantdoctor.fragments.historyDetails.HistoryDetailsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

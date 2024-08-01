@@ -9,7 +9,7 @@
 
         <variable
             name="plant"
-            type="com.example.plantdoc.data.entities.plant.Plant" />
+            type="com.example.plantdoctor.data.entities.plant.Plant" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

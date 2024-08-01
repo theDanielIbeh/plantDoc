@@ -12,7 +12,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.login.LoginViewModel" />
+            type="com.example.plantdoctor.fragments.login.LoginViewModel" />
 
     </data>
 

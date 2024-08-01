@@ -10,7 +10,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.plants.PlantsViewModel" />
+            type="com.example.plantdoctor.fragments.plants.PlantsViewModel" />
 
         <variable
             name="shouldCancelShow"

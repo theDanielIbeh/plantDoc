@@ -12,7 +12,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.register.RegisterViewModel" />
+            type="com.example.plantdoctor.fragments.register.RegisterViewModel" />
 
     </data>
 

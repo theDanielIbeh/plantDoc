@@ -9,7 +9,7 @@
 
         <variable
             name="disease"
-            type="com.example.plantdoc.data.entities.disease.Disease" />
+            type="com.example.plantdoctor.data.entities.disease.Disease" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

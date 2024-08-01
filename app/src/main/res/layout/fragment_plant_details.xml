@@ -8,7 +8,7 @@
 
         <variable
             name="viewModel"
-            type="com.example.plantdoc.fragments.plantDetails.PlantDetailsViewModel" />
+            type="com.example.plantdoctor.fragments.plantDetails.PlantDetailsViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout
